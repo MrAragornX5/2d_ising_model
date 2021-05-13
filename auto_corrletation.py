@@ -14,23 +14,23 @@ def mean(data_array, start, end):
     mean = 0.0
     for i in range(start, end):
         mean += data_array[i]
-    return mean
+    return mean/(end-start)
 
 def auto_corrfunction(data_array, N, t):
-    c_t = 0
+    rho_t = 0
     
     mean_0 = mean(data_array, 0, N-t)
     mean_t = mean(data_array, t, N)
     #print("m0, mt = ", mean_0, mean_t)
     
     for i in range(0, N-t):
-        c_t += (data_array[i] - mean_0) * (data_array[i+t] - mean_t)
-        #print("ct = ", c_t)
+        rho_t += (data_array[i] - mean_0) * (data_array[i+t] - mean_t)
+        print("ct = ", c_t)
     
-    c_t/=(N-t)
-    return c_t
+    rho_t/=(N-t)
+    return rho_t
 
-def integrated_autocorrfunction(data_array, t, N):
+def integrated_autocorrfunction(data_array, N, t):
     c_0 = auto_corrfunction(data_array, N, 0)   
     
     c_tilde = 0
@@ -45,15 +45,15 @@ def naive_error(data_array, N):
     return numpy.sqrt(auto_corrfunction(data_array, N, 0)/(N-1))
 
 def true_error(data_array, N):
-    sigma = (numpy.sqrt(2.*integrated_autocorrfunction(data_array, N)
+    sigma = (numpy.sqrt(2.*integrated_autocorrfunction(data_array, N, t)
             * naive_error(data_array, N)))
     return sigma
 
 
 
 
-t=32
-N = 1000
+
+N = 10000
 
 
 
@@ -63,14 +63,14 @@ data = metropolis.metropolis(0, 3, N)
 
 
 
+tmax= 32
+c_t = numpy.zeros(tmax)
 
-tau_int = numpy.zeros(t)
 
-for i in range(t):
+for i in range(0, tmax):
     #data = metropolis.metropolis(0, 3, N)
-    tau_int[i] = integrated_autocorrfunction(data, t, N)
+    c_t[i] = auto_corrfunction(data, N, i)
 
 
-print(tau_int)
-plt.plot(tau_int)
-
+print(c_t)
+plt.plot(c_t, marker="1")
