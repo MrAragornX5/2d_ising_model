@@ -1,14 +1,15 @@
-import numpy, time
+import numpy, time, random
 
 def PDF_gauss(x):
     return 0.5*numpy.sqrt(numpy.pi)*numpy.exp(-0.5*numpy.power(x, 2))
 
+
 def metropolis(x_start, a, N):
     
-    numpy.random.seed(int(time.time()))
+    random.seed(time.time())
     markov_chain = numpy.zeros(N)
     
-    accept, reject = 0, 0
+    accept, reject = [], []
     
     x_old = x_start
     markov_chain[0] = x_old
@@ -21,14 +22,16 @@ def metropolis(x_start, a, N):
         
         if R >= 1:
             markov_chain[i] = x_new
-            accept+=1
+            accept.append(x_new)
         else:
             x_ran = numpy.random.uniform(0, 1)
             if x_ran < R:
                 markov_chain[i] = x_new
-                accept+=1   
+                accept.append(x_new)   
             else:
-                markov_chain[i] = markov_chain[i-1]
-                reject+=1
+                x_old = markov_chain[i-1]
+                markov_chain[i] = x_old
+                reject.append(x_old)
     
+    #accept_rate = len(accept)/N
     return markov_chain
